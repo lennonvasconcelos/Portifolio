@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lennon Vasconcelos — Data & Automation</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a0f1e;
+    --navy-2: #111827;
+    --navy-3: #1a2338;
+    --accent: #00c6ff;
+    --accent-2: #3b82f6;
+    --white: #f0f4ff;
+    --muted: #8899bb;
+    --border: rgba(0,198,255,0.12);
+    --card-bg: rgba(26,35,56,0.8);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,198,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,198,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 {
+    width: 500px; height: 500px;
+    background: rgba(0,198,255,0.06);
+    top: -100px; left: -100px;
+  }
+  .orb-2 {
+    width: 400px; height: 400px;
+    background: rgba(59,130,246,0.07);
+    bottom: 100px; right: -100px;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 5%;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10,15,30,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 120px;
+    max-width: 100%;
+    padding-left: 8%;
+    padding-right: 8%;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(48px, 7vw, 88px);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    color: var(--white);
+    margin-bottom: 24px;
+  }
+  h1 .accent { color: var(--accent); }
+  h1 .block { display: block; }
+
+  .hero-desc {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 48px;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: var(--accent);
+    color: var(--navy);
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-weight: 500;
+    font-size: 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--accent); background: rgba(0,198,255,0.05); }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* SECTION TITLES */
+  .section-header {
+    margin-bottom: 56px;
+  }
+  .section-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: block;
+  }
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--white);
+    line-height: 1.1;
+  }
+  .section-line {
+    width: 40px;
+    height: 2px;
+    background: var(--accent);
+    margin-top: 16px;
+  }
+
+  /* CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    backdrop-filter: blur(8px);
+  }
+  .card:hover {
+    border-color: rgba(0,198,255,0.35);
+    transform: translateY(-4px);
+  }
+
+  .card-thumb {
+    width: 100%;
+    height: 180px;
+    background: var(--navy-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Fake dashboard preview */
+  .dash-preview {
+    width: 90%;
+    height: 85%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .dash-row { display: flex; gap: 6px; }
+  .dash-block {
+    background: rgba(0,198,255,0.08);
+    border: 1px solid rgba(0,198,255,0.15);
+    border-radius: 4px;
+  }
+  .dash-block.full { flex: 1; height: 32px; }
+  .dash-block.half { flex: 1; height: 32px; }
+  .dash-block.chart { flex: 1; height: 60px; background: rgba(0,198,255,0.05); }
+  .dash-block.wide { flex: 2; height: 60px; }
+  .dash-block.accent { background: rgba(0,198,255,0.18); }
+
+  /* Fake flow preview */
+  .flow-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+  }
+  .flow-node {
+    background: rgba(0,198,255,0.1);
+    border: 1px solid rgba(0,198,255,0.25);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 10px;
+    color: var(--accent);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .flow-arrow {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .badge-pbi {
+    background: rgba(242,193,30,0.15);
+    color: #f2c11e;
+    border: 1px solid rgba(242,193,30,0.25);
+  }
+  .badge-pa {
+    background: rgba(0,198,255,0.12);
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+
+  .card-body { padding: 20px 24px 24px; }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .card-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .card-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: rgba(0,198,255,0.04);
+  }
+  .card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    transition: gap 0.2s;
+  }
+  .card-link:hover { gap: 10px; }
+
+  /* SOBRE */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .about-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .about-role {
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  .about-text {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  .skills-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .skill-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .skill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .about-avatar {
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 320px;
+    background: var(--navy-3);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 72px;
+    font-weight: 800;
+    color: rgba(0,198,255,0.2);
+    letter-spacing: -2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .about-avatar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 60%, rgba(0,198,255,0.06));
+  }
+  .about-avatar-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    display: none;
+  }
+  .about-avatar-placeholder { position: relative; z-index: 1; }
+
+  /* CONTATO */
+  #contato {
+    text-align: center;
+  }
+  .contact-desc {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 440px;
+    margin: 16px auto 40px;
+  }
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 32px 5%;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-tag { animation: fadeUp 0.6s ease both; }
+  h1 { animation: fadeUp 0.6s 0.1s ease both; }
+  .hero-desc { animation: fadeUp 0.6s 0.2s ease both; }
+  .hero-ctas { animation: fadeUp 0.6s 0.3s ease both; }
+  .hero-stats { animation: fadeUp 0.6s 0.4s ease both; }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav { padding: 0 6%; }
+    .nav-links { display: none; }
+    #hero { padding-left: 6%; padding-right: 6%; }
+    .hero-stats { gap: 28px; flex-wrap: wrap; }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-avatar { max-width: 200px; }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+
+  /* EMBED MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,15,30,0.92);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--navy-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 900px;
+    overflow: hidden;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; }
+  .modal-close {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 24px;
+    line-height: 1;
+    background: none;
+    border: none;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--white); }
+  .modal-body { padding: 0; }
+  .modal-body iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    display: block;
+  }
+  .modal-placeholder {
+    width: 100%;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: var(--muted);
+    font-size: 15px;
+    padding: 40px;
+    text-align: center;
+  }
+  .modal-placeholder code {
+    font-size: 12px;
+    background: var(--navy-3);
+    padding: 6px 12px;
+    border-radius: 4px;
+    color: var(--accent);
+    font-family: monospace;
+  }
+
+  .how-to-add {
+    background: var(--navy-3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .how-to-add strong { color: var(--white); }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Dashboard</span>
+      <button class="modal-close" onclick="closeModalDirect()">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="modal-placeholder">
+        <span>&#128196;</span>
+        <p>Cole aqui o link do Power BI "Publicar na Web" para este projeto.</p>
+        <code>Edite o HTML → substitua data-embed nos cards</code>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">LV<span>.</span></span>
+  <ul class="nav-links">
+    <li><a href="#dashboards">Dashboards</a></li>
+    <li><a href="#automacoes">Automações</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <span class="hero-tag">Data & Automation Specialist</span>
+  <h1>
+    <span class="block">Lennon</span>
+    <span class="block">Vasconcelos<span class="accent">.</span></span>
+  </h1>
+  <p class="hero-desc">
+    Transformo dados em decisões com Power BI e elimino trabalho repetitivo com Power Automate. Projetos reais, resultados mensuráveis.
+  </p>
+  <div class="hero-ctas">
+    <a href="#dashboards" class="btn-primary">Ver projetos →</a>
+    <a href="#contato" class="btn-outline">Entrar em contato</a>
+  </div>
+  <div class="hero-stats">
+    <div>
+      <span class="stat-num" id="stat-dash">0</span>
+      <span class="stat-label">Dashboards entregues</span>
+    </div>
+    <div>
+      <span class="stat-num" id="stat-auto">0</span>
+      <span class="stat-label">Automações criadas</span>
+    </div>
+    <div>
+      <span class="stat-num" id="stat-hrs">0h</span>
+      <span class="stat-label">Horas economizadas</span>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARDS -->
+<section id="dashboards" style="padding-top: 60px;">
+  <div class="section-header">
+    <span class="section-tag">Power BI</span>
+    <h2>Dashboards</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="cards-grid">
+
+    <!-- Card PBI 1 -->
+    <div class="card">
+      <div class="card-thumb">
+        <div class="dash-preview">
+          <div class="dash-row">
+            <div class="dash-block full accent"></div>
+            <div class="dash-block half"></div>
+            <div class="dash-block half"></div>
+          </div>
+          <div class="dash-row">
+            <div class="dash-block wide chart"></div>
+            <div class="dash-block chart"></div>
+          </div>
+          <div class="dash-row">
+            <div class="dash-block full" style="height:20px"></div>
+          </div>
+        </div>
+        <span class="card-badge badge-pbi">Power BI</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Dashboard de Vendas</div>
+        <p class="card-desc">Acompanhamento de performance comercial com KPIs, metas e análise regional em tempo real.</p>
+        <div class="card-tags">
+          <span class="tag">DAX</span>
+          <span class="tag">SQL</span>
+          <span class="tag">RLS</span>
+        </div>
+        <a href="#" class="card-link" onclick="openModal('Dashboard de Vendas', 'SEU_LINK_POWER_BI_AQUI'); return false;">Ver dashboard →</a>
+      </div>
+    </div>
+
+    <!-- Card PBI 2 -->
+    <div class="card">
+      <div class="card-thumb">
+        <div class="dash-preview">
+          <div class="dash-row">
+            <div class="dash-block half"></div>
+            <div class="dash-block half"></div>
+            <div class="dash-block half accent"></div>
+          </div>
+          <div class="dash-row">
+            <div class="dash-block chart" style="flex:1.5"></div>
+            <div class="dash-block chart"></div>
+          </div>
+          <div class="dash-row">
+            <div class="dash-block full" style="height:16px"></div>
+          </div>
+        </div>
+        <span class="card-badge badge-pbi">Power BI</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Painel Financeiro</div>
+        <p class="card-desc">Visão consolidada de receitas, despesas, fluxo de caixa e DRE com drill-through detalhado.</p>
+        <div class="card-tags">
+          <span class="tag">DAX</span>
+          <span class="tag">Excel</span>
+          <span class="tag">Drill-through</span>
+        </div>
+        <a href="#" class="card-link" onclick="openModal('Painel Financeiro', 'SEU_LINK_POWER_BI_AQUI'); return false;">Ver dashboard →</a>
+      </div>
+    </div>
+
+    <!-- Card PBI 3 -->
+    <div class="card">
+      <div class="card-thumb">
+        <div class="dash-preview">
+          <div class="dash-row">
+            <div class="dash-block full accent"></div>
+          </div>
+          <div class="dash-row">
+            <div class="dash-block chart" style="flex:1"></div>
+            <div class="dash-block chart" style="flex:1"></div>
+            <div class="dash-block chart" style="flex:1"></div>
+          </div>
+          <div class="dash-row">
+            <div class="dash-block full" style="height:18px"></div>
+          </div>
+        </div>
+        <span class="card-badge badge-pbi">Power BI</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Análise de RH</div>
+        <p class="card-desc">Headcount, turnover, custo por colaborador e análise de ausências por departamento.</p>
+        <div class="card-tags">
+          <span class="tag">Power Query</span>
+          <span class="tag">DAX</span>
+          <span class="tag">People Analytics</span>
+        </div>
+        <a href="#" class="card-link" onclick="openModal('Análise de RH', 'SEU_LINK_POWER_BI_AQUI'); return false;">Ver dashboard →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- AUTOMAÇÕES -->
+<section id="automacoes">
+  <div class="section-header">
+    <span class="section-tag">Power Automate</span>
+    <h2>Automações</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="cards-grid">
+
+    <!-- Card PA 1 -->
+    <div class="card">
+      <div class="card-thumb">
+        <div class="flow-preview">
+          <div class="flow-node">E-mail recebido</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Extrair dados</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">SharePoint</div>
+        </div>
+        <span class="card-badge badge-pa">Power Automate</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Triagem de E-mails</div>
+        <p class="card-desc">Fluxo que captura e-mails, extrai dados via IA e registra automaticamente no SharePoint.</p>
+        <div class="card-tags">
+          <span class="tag">Outlook</span>
+          <span class="tag">SharePoint</span>
+          <span class="tag">AI Builder</span>
+        </div>
+        <a href="#" class="card-link" onclick="openModal('Triagem de E-mails', null); return false;">Ver demonstração →</a>
+      </div>
+    </div>
+
+    <!-- Card PA 2 -->
+    <div class="card">
+      <div class="card-thumb">
+        <div class="flow-preview">
+          <div class="flow-node">Formulário</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Aprovação</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Teams</div>
+        </div>
+        <span class="card-badge badge-pa">Power Automate</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Fluxo de Aprovação</div>
+        <p class="card-desc">Automatização do processo de aprovação de solicitações com notificações via Teams e registro histórico.</p>
+        <div class="card-tags">
+          <span class="tag">Forms</span>
+          <span class="tag">Teams</span>
+          <span class="tag">Aprovação</span>
+        </div>
+        <a href="#" class="card-link" onclick="openModal('Fluxo de Aprovação', null); return false;">Ver demonstração →</a>
+      </div>
+    </div>
+
+    <!-- Card PA 3 -->
+    <div class="card">
+      <div class="card-thumb">
+        <div class="flow-preview">
+          <div class="flow-node">Agendamento</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Relatório</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Envio</div>
+        </div>
+        <span class="card-badge badge-pa">Power Automate</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Relatório Automatizado</div>
+        <p class="card-desc">Geração e envio automático de relatórios Excel semanais para stakeholders via e-mail.</p>
+        <div class="card-tags">
+          <span class="tag">Excel</span>
+          <span class="tag">Outlook</span>
+          <span class="tag">Agendado</span>
+        </div>
+        <a href="#" class="card-link" onclick="openModal('Relatório Automatizado', null); return false;">Ver demonstração →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="about-grid">
+    <div>
+      <span class="section-tag">Quem sou</span>
+      <div class="about-name">Lennon Vasconcelos</div>
+      <div class="about-role">Data & Automation Specialist</div>
+      <p class="about-text">
+        Especialista em transformar dados brutos em inteligência de negócio e em eliminar processos manuais com automações eficientes.
+      </p>
+      <p class="about-text">
+        Trabalho com Power BI para construir dashboards que apoiam decisões estratégicas e com Power Automate para criar fluxos que economizam horas de trabalho por semana.
+      </p>
+      <div class="skills-list">
+        <div class="skill-item"><span class="skill-dot"></span>Power BI</div>
+        <div class="skill-item"><span class="skill-dot"></span>Power Automate</div>
+        <div class="skill-item"><span class="skill-dot"></span>DAX & Power Query</div>
+        <div class="skill-item"><span class="skill-dot"></span>SQL</div>
+        <div class="skill-item"><span class="skill-dot"></span>Excel avançado</div>
+        <div class="skill-item"><span class="skill-dot"></span>SharePoint</div>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:center;">
+      <div class="about-avatar">
+        <span class="about-avatar-placeholder">LV</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section id="contato">
+  <span class="section-tag">Vamos conversar</span>
+  <h2>Entre em contato</h2>
+  <p class="contact-desc">Tem um projeto ou quer trocar uma ideia sobre dados e automação? Me chame.</p>
+  <div class="contact-links">
+    <a href="https://linkedin.com/in/seu-perfil" class="btn-primary" target="_blank">LinkedIn →</a>
+    <a href="mailto:seu@email.com" class="btn-outline">seu@email.com</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Lennon Vasconcelos · Feito com HTML puro · <a href="https://pages.github.com" target="_blank" style="color:var(--accent);text-decoration:none;">Hospedado no GitHub Pages</a></p>
+</footer>
+
+<script>
+  // Counter animation
+  function animateCounter(el, target, suffix) {
+    let start = 0;
+    const step = Math.ceil(target / 40);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { start = target; clearInterval(timer); }
+      el.textContent = start + suffix;
+    }, 40);
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animateCounter(document.getElementById('stat-dash'), 12, '');
+        animateCounter(document.getElementById('stat-auto'), 8, '');
+        animateCounter(document.getElementById('stat-hrs'), 200, 'h');
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  observer.observe(document.querySelector('.hero-stats'));
+
+  // Modal
+  function openModal(title, embedUrl) {
+    document.getElementById('modal-title').textContent = title;
+    const body = document.getElementById('modal-body');
+    if (embedUrl && embedUrl !== 'SEU_LINK_POWER_BI_AQUI' && embedUrl.startsWith('http')) {
+      body.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+    } else {
+      body.innerHTML = `
+        <div class="modal-placeholder">
+          <div style="font-size:40px;opacity:0.3">📊</div>
+          <p><strong style="color:var(--white)">${title}</strong></p>
+          <p>Para exibir seu dashboard aqui:</p>
+          <div class="how-to-add">
+            <strong>Power BI:</strong> Abra o relatório → Arquivo → Publicar na Web → copie o link do iframe e cole no atributo <code>data-embed</code> deste card no HTML.<br><br>
+            <strong>Power Automate:</strong> Adicione o link de um vídeo de demonstração (Loom ou YouTube) no mesmo atributo.
+          </div>
+        </div>`;
+    }
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal(e) {
+    if (e.target.id === 'modal') closeModalDirect();
+  }
+  function closeModalDirect() {
+    document.getElementById('modal').classList.remove('open');
+    document.getElementById('modal-body').innerHTML = '';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
+</script>
+</body>
+</html>
